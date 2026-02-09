@@ -3,3 +3,8 @@
 /data_splits
 /pneumonia_dataset
 /vit_baseline.pth
+/covid_only_train
+/covid_only_generated
+/covid_only_attn_generated
+/covid_diffuser.pt
+/covid_diffuser_attn.pt
