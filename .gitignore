@@ -8,3 +8,5 @@
 /covid_only_attn_generated
 /covid_diffuser.pt
 /covid_diffuser_attn.pt
+/vit_with_generated.pth
+/vit_with_attn_generated.pth
