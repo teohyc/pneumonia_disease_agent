@@ -1,0 +1,59 @@
+Covid-19 is likely to remain an important differential diagnosis for the foreseeable future in anyone presenting to hospital with a flu-like illness, lymphopenia on full blood count, and/or a change in normal sense of smell (anosmia) or taste.12
+
+Most people with covid-19 infection do not develop pneumonia3; however, chest radiography of people who are seriously ill with respiratory symptoms when they present to hospital can help to identify those with covid-19 pneumonia.
+
+In this article we offer advice to non-radiologists on how to look for changes on chest radiograph that may be suggestive of covid-19 pneumonia, as prompt review and report from an onsite or remote radiologist is not always available.
+
+The recommendations in this article are based on a combination of emerging evidence, current guidelines, and our clinical experience.
+
+For the radiograph examples used in this article, we cannot confirm whether each patient tested positive for covid-19 because we did not have access or ethical approval to access these patients’ clinical records; however, they were all diagnosed with covid-19 pneumonia as they had supportive radiographical features during the covid-19 pandemic.
+
+No fixed definition of covid-19 pneumonia exists; in this article the term is used when describing patients with clinical features of covid-19 infection who have either clinical or radiological evidence of pneumonia,45 or acute respiratory distress.1
+
+Like other pneumonias, covid-19 pneumonia causes the density of the lungs to increase. This may be seen as whiteness in the lungs on radiography which, depending on the severity of the pneumonia, obscures the lung markings that are normally seen; however, this may be delayed in appearing or absent.
+
+• When lung markings are partially obscured by the increased whiteness, a ground glass pattern (ground glass opacity, fig 1) occurs. This can be subtle and might need confirmation with a radiologist.
+
+Review the radiograph systematically, looking for abnormalities of the heart, mediastinum, lungs, diaphragm, and ribs,9 and remembering that radiographic changes of covid-19 pneumonia can be subtle or absent.
+
+Compare with previous chest radiographs when available.
+
+Look for evidence of ground glass opacity, peripheral linear opacities, or consolidation in the lung.
+
+
+Features and limitations of chest radiographs in covid-19:
+
+Normal:
+Central mediastinum and heart appear normal
+Lungs predominantly contain air (appearing black)
+Lung markings are present, representing blood vessels extending from the hilum to the lung periphery (these branch and decrease in calibre, such that few vessels are seen at the lung periphery)
+The diaphragm is curvilinear in outline with sharp costophrenic margins
+Ground glass opacity:
+The initial abnormalities suggesting covid-19 pneumonia on a chest radiograph are loss of the normal black appearance in the lung
+This is seen as increased whiteness, (because of increased density), but not enough to totally obscure lung markings; giving a ground glass appearance
+Ground glass opacities can be difficult to observe; radiologist confirmation is recommended
+Horizontal linear opacities may be seen with ground-glass change9 (fig 1, fig 3b)
+Location: usually bilateral but can be unilateral.7 More often reported in a peripheral lung8 adjacent to the chest wall and diaphragm and usually with a distribution in the mid and lower zones8911Fig 4b shows ground glass opacities in the right upper zone, as will be the case in approximately 20% of patients with covid-19 pneumonia
+Consolidation:
+Ground-glass opacities become denser (whiter) and progress to consolidation with complete loss of lung markings
+Location: The areas of consolidation are likely to have progressed from sites of ground glass opacities (fig 2, fig 3c)
+Limitations:
+AP images from portable machines produce a poorer quality image when compared with a PA chest radiograph done in a dedicated radiography facility, therefore can be more difficult to interpret. Limitations of AP chest radiograph include reduced inspiratory effort because of the patient’s positioning (potentially exacerbated by their illness), resulting in sub-optimal imaging; lung changes may therefore appear more marked or localised infection may be missed; the heart can also appear magnified.
+
+Under-exposure of a chest radiograph can occur with operator factors such inappropriate radiation dose, rotation of the patient, patient factors such high body mass index, chest wall abnormalities (or breast prostheses), and inappropriate processing of the image. In an under-exposed image, the whole radiograph appears whiter. In comparison with a site with pathology or abnormality, the affected site or area will be of increased density (whiter) compared with normal areas 
+
+Differential Diagnoses:
+round glass appearance, consolidation, and linear opacities can also be caused by
+
+Other atypical pneumonias and the early stages of community acquired pneumonias
+Pulmonary aspiration
+Pulmonary oedema
+Lung cancer
+Inflammatory lung disease, such as pulmonary eosinophilia
+Vasculitides, eg Wegener’s (granulomatosis with polyangiitis)
+Haemorrhage.
+Causes of other atypical pneumonias include SARS and MERS, mycoplasma infection, Coxiella burnetti, and legionella19 (not an exclusive list).
+
+Causes of bacterial community acquired pneumonias include Streptococcus pneumoniae, Haemophilus influenzae, and Klebsiella20 (not an exclusive list). Chest radiograph changes from community acquired pneumonias are typically unilateral affecting only one part of the lung. Community acquired pneumonias are predominantly associated with consolidation on chest radiography, not ground glass opacity or linear opacities.20
+
+Recent reports suggest that vaping causes radiological abnormalities,21 and these appearances have been described as being similar to covid-19.

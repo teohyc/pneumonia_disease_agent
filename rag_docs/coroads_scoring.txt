@@ -1,0 +1,71 @@
+Co-RADS:
+
+Category 1:
+Negative or very low
+Normal chest X-ray • No abnormality detected
+
+Category 2: 
+Negative or very low
+Minor abnormalities unrelated to COVID-19 pneumonia
+• Anatomical variants (e.g., breast
+implants, scoliosis, and old bony
+fractures)
+• Features favoring minor technical
+issues (e.g., suboptimal inspiration,
+inadequate exposure) but not
+affecting film interpretation
+• Irrelevant abnormalities (e.g., old
+tuberculosis (TB), mild cardiomegaly,
+aortic atherosclerosis)
+
+Category C: 
+Low 
+Low probability or atypical for COVID-19 pneumonia, but with other clinically significant diseases requiring clinical correlation and further management
+• Other clinically signifcant diseases
+(e.g., bacterial pneumonia, active
+TB, congestive heart failure,
+pneumothorax, pleural effusion,
+malignancy)
+• Presence of severe technical artifacts
+affecting film interpretation
+and requiring a repeated or followup chest X-ray
+
+Category 3: 
+Moderate 
+Equivocal/unsure/indeterminate for COVID-19 pneumonia
+• Some features (e.g., subtle, poorly
+dfined opacities) that may represent
+early/mild/atypical COVID-19
+pneumonia or other causes (e.g.,
+pseudolesions, other diseases)
+requiring clinical correlation and
+follow-up chest X-ray
+
+Category 4: 
+High 
+Suspicious for early/mild COVID-19 pneumonia
+• Single or multifocal poorly defined
+ground-glass opacities or
+consolidations in the unilateral lung
+
+Category 5: 
+Very high 
+Typical for COVID-19 pneumonia
+• Multifocal peripheral opacities
+(ground-glass opacities and/or
+consolidations), including those
+with rounded morphology, in
+bilateral lungs
+
+When chest X-ray findings at more than one category, the chest X-ray should be
+designated with the higher Co-RADS category [28]. For example, a chest
+X-ray shows subtle equivocal opacities in one lung (Co-RADS category
+3) and multifocal, poorly defined ground-glass opacities in another lung (Rama
+Co-RADS 4), the chest X-ray should be assigned to Co-RADS category 4.
+When another clinically signficant disease coincides with a single poorly defined
+ground-glass opacity or consolidation, the chest X-ray should be assigned to
+Co-RADS category 4 (Figure 2B).
+standardized description and interpretation of Co-RADS facilitate
+radiologists to provide a rapid, precise, and concise chest X-ray report regarding
+the presence or absence of pneumonia in patients with confirmed COVID-19,
+despite the different levels of experiences.

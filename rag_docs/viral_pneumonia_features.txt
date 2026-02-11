@@ -1,0 +1,43 @@
+Findings on Chest Radiograph in Viral Pneumonia
+Viral pneumonia typically shows bilateral, patchy, or diffuse infiltrates on a chest x-ray, often with a peripheral distribution 
+
+In severe cases, it may show consolidation or ground-glass opacities
+
+The chest x-ray is usually normal in acute uncomplicated influenza 
+
+When primary viral pneumonia occurs, the chest x-ray often shows multiple infiltrates or consolidation, particularly in elderly adults 
+
+Cavitations or pleural changes suggest bacterial superinfection 
+
+In combined viral-bacterial pneumonia, the chest x-ray often shows cavitation or pleural effusions 
+
+The use of chest imaging, including chest radiographs, can be helpful in the diagnosis and management of viral pneumonia, such as COVID-19 
+
+However, daily chest radiographs in stable patients are not necessary and may increase the risk of viral transmission to healthcare workers 
+
+Chest radiographs can be useful in evaluating the severity of illness by identifying multilobar involvement 
+
+It's worth noting that chest radiographs cannot reliably distinguish viral from bacterial community-acquired pneumonia and do not reliably distinguish among the various possible bacterial pathogens 
+
+From the Research:
+Radiological Findings in Viral Pneumonia
+The radiological findings in viral pneumonia can vary depending on the causative viral agent.
+
+A study of 210 pediatric patients with viral pneumonia found that the abnormal chest radiograph findings consisted of bilateral patchy areas of consolidation, interstitial lung disease, diffuse areas of air space consolidation, and lobar consolidation 
+
+
+In patients with severe H1N1 pneumonia, the predominant radiographic findings were ground-glass opacities, consolidation, and reticular opacities, with bilateral and lower lung distribution being more common 
+
+In patients with COVID-19, the typical chest CT imaging features include multiple patchy ground glass opacities in bilateral multiple lobular with periphery distribution, with a high proportion of ground-glass opacity in the lung tissues 
+
+Other viral pneumonias, such as cytomegalovirus pneumonia, can also present with diffuse multilobular ground glass appearance with peripheral nodular shadowing on high-resolution CT thorax 
+
+Comparison with Bacterial Pneumonia:
+A study comparing the chest CT imaging features of patients with COVID-19, bacterial pneumonia, and other viral pneumonia found that bilateral pulmonary lesions were more common in patients with COVID-19 and other viral pneumonia, while bacterial pneumonia was mainly characterized by single-lung and multi-lobed lesion 
+
+The proportion of ground-glass opacity in the lung tissues of patients with COVID-19 was significantly higher than that of patients with bacterial pneumonia, while the incidence of lung tissue consolidation, air bronchial sign, and pleural effusion were significantly lower 
+
+Distribution and Extent of Lesions
+The radiological findings in viral pneumonia can be bilateral and multifocal, with a peripheral distribution, and can involve multiple lobes 
+
+The extent of lesions involvement can vary, with some patients presenting with diffuse and extensive abnormalities, while others may have more localized lesions 
