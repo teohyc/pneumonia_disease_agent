@@ -16,5 +16,5 @@ vectorstore = Chroma(
 
 retriever = vectorstore.as_retriever(
     search_type="similarity",
-    search_kwargs={"k": 7}
+    search_kwargs={"k": 6}
 )

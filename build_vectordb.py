@@ -11,20 +11,20 @@ COLLECTION_NAME = "chest_xray_knowledge"
 def build_vector_db():
     documents = []
 
-    for file in os.listdir(DOCS_PATH): #presenting all files in the directory
+    for file in os.listdir(DOCS_PATH):
         if file.endswith(".txt"):
             loader = TextLoader(os.path.join(DOCS_PATH, file))
             documents.extend(loader.load())
 
-    print(f"Loaded {len(documents)} documents.")
+    print(f"Loaded {len(documents)} raw documents")
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size = 200,
-        chunk_overlap = 50
+        chunk_size=200,
+        chunk_overlap=50
     )
 
     chunks = splitter.split_documents(documents)
-    print(f"Split into {len(chunks)} chunks.")
+    print(f"Split into {len(chunks)} chunks")
 
     embeddings = OllamaEmbeddings(
         model="embeddinggemma:latest"
@@ -38,7 +38,7 @@ def build_vector_db():
     )
 
     vectorstore.persist()
-    print("Vector database built and persisted.")
+    print("✅ Vector DB successfully built and persisted")
 
 if __name__ == "__main__":
     build_vector_db()
