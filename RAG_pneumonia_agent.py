@@ -29,7 +29,7 @@ vectorstore = Chroma(
 
 retriever = vectorstore.as_retriever(
     search_type="similarity",
-    search_kwargs={"k": 6}
+    search_kwargs={"k": 3}
 )
 
 #declare llm used
@@ -203,9 +203,11 @@ Retrieved Documents:
 
 Output STRICTLY in this format:
 
-DECISION: SUFFICIENT or INSUFFICIENT
+DECISION: SUFFICIENT or INSUFFICIENT 
 REASON: <brief reasoning>
 ADVICE: <what the query formulator should search next if insufficient>
+
+(Output "DECISION: INSUFFICIENT" if the documents are not enough or the Confidence of ViT result is less than 90%)
 """        
     )
 
@@ -250,17 +252,18 @@ The ViT model has the following classification performance metrics:
    macro avg       0.86      0.84      0.84      
 weighted avg       0.85      0.85      0.85      
 ================================================
-While you may use the performance metrics to guide your explanation, NEVER MENTION THE PERFORMANCE METRICS OR IMPLY THEM IN YOUR EXPLANATION.
+While you may use the performance metrics to guide your explanation, NEVER MENTION OR DISCUSS THE PERFORMANCE METRICS OR IMPLY THEM IN YOUR EXPLANATION AS THE TABLE PROVIDED ABOVE IS CONFIDENTIAL.
 
 If supporting documents are limited, explicitly state that evidence is limited.
 
 Provide structured explanation:
 
-1. Diagnosis (include predicted class and confidence)
-2. Supporting Evidence
-3. Uncertainty Discussion
+1. Present the X-ray ViT diagnosis result professionally
+2. Diagnosis (include predicted class and confidence)
+3. Supporting Evidence
+4. Uncertainty Discussion
 
-Base everything strictly on the ViT output and retrieved documents.
+Base everything strictly on the ViT output and retrieved documents. Always explain professionally, intelligently  
 """       
     )
 
@@ -273,7 +276,7 @@ def should_loop(state: AgentState):
     if state["iteration"] >= state["max_iterations"]:
         
         print("explain")
-        print(f"iteration: {state["iteration"]}") #debugging
+        print(f"""iteration: {state["iteration"]}""") #debugging
 
         return "explain"
     
@@ -281,11 +284,11 @@ def should_loop(state: AgentState):
     if "decision: insufficient" in decision_text:
 
         print("loop")
-        print(f"iteration: {state["iteration"]}")
+        print(f"""iteration: {state["iteration"]}""")
 
         return "loop"
     
-    print(f"iteration: {state["iteration"]}")
+    print(f"""iteration: {state["iteration"]}""")
     print("explain")
 
     return "explain"
@@ -348,7 +351,7 @@ def run_agent(image_path: str, max_iterations: int = 3):
 #main
 if __name__ == "__main__":
 
-    image_path = input("Enter path to chest X-ray image").strip()
+    image_path = input("Enter path to chest X-ray image: ").strip()
 
     try:
         run_agent(image_path=image_path, max_iterations=3)
