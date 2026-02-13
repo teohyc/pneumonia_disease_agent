@@ -97,7 +97,7 @@ def vit_inference(image_path: str) -> dict:
         
         #inference
         with torch.no_grad():
-            outputs, _ = vit_model(image_tensor)
+            outputs, attn_weights_all = vit_model(image_tensor)
             probabilities = torch.softmax(outputs, dim=1)
             
         #probabilities for all classes and transfer to cpu and to numpy array
@@ -111,16 +111,54 @@ def vit_inference(image_path: str) -> dict:
         predicted_class = class_probs[0][0]
         confidence_score = class_probs[0][1]
 
+        #For heatmap
+        # (B, heads, 65, 65)
+        attn = attn_weights_all[-1][0]  # first image
+
+        #average across heads 
+        attn = attn.mean(dim=0)  # (65, 65)
+
+        #CLS token attention to patches 
+        cls_attn = attn[0, 1:]  # (64,)
+
+        #reshape to 8x8 grid
+        heatmap = cls_attn.reshape(8, 8).cpu().numpy()
+
+        #normalize 
+        heatmap = heatmap - heatmap.min()
+        heatmap = heatmap / (heatmap.max() + 1e-8)
+
+        #resize
+        original = Image.open(image_path).convert("RGB")
+        original_np = np.array(original).astype(np.float32) / 255.0
+
+        heatmap = cv2.resize(
+            heatmap,
+            (original_np.shape[1], original_np.shape[0])
+        )
+
+        heatmap = np.uint8(255 * heatmap)
+        heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+        heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB) / 255.0
+
+        overlay = 0.5 * heatmap + 0.5 * original_np
+        overlay = np.uint8(255 * overlay)
+
+        output_path = "attention_overlay.jpg"
+        cv2.imwrite(output_path, cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
+
         torch.cuda.empty_cache() #clear GPU memory
         
         #top_k list
         top_k = [{"class": class_name, "prob": round(prob, 4)} for class_name, prob in class_probs]
         
+        print(predicted_class, round(confidence_score, 4)) #debugging
+
         return {
             "predicted_class": predicted_class,
             "confidence": round(confidence_score, 4),
             "top_k": top_k
-        }
+        }, output_path
         
     except Exception as e:
         return {
@@ -128,7 +166,7 @@ def vit_inference(image_path: str) -> dict:
             "confidence": 0.0,
             "top_k": [],
             "error": str(e)
-        }
+        }, output_path
     
 #declare RAG retriever tool
 @tool
@@ -153,12 +191,13 @@ def reshape_transform(tensor, height=8, width=8):
 
 #define ViT node
 def vit_node(state: AgentState) -> AgentState:
-    vit_result = vit_inference.invoke({"image_path": state["image_path"]})
+    vit_result, heatmap_path = vit_inference.invoke({"image_path": state["image_path"]})
     
     return {
         "vit_result": vit_result,
         "retrieved_docs": [],
         "advisor_feedback": "",
+        "heatmap_path": heatmap_path
     }
 
 #define reasoner 1 node, query formulater
@@ -297,27 +336,13 @@ Base everything strictly on the ViT output and retrieved documents. Always expla
     response = explainer_llm.invoke([prompt])
 
     return {"messages": [response]}
-
+'''
 #gradcam node
 def gradcam_node(state: AgentState) -> AgentState:
 
     image_path = state["image_path"]
 
-    # ---- Preprocess ----
-    transform = transforms.Compose([
-        transforms.Resize((64, 64)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.5], std=[0.5])
-    ])
-
-    image = Image.open(image_path).convert("L")
-    input_tensor = transform(image).unsqueeze(0).to(device)
-
-    # ---- Forward pass (get attention weights) ----
-    vit_model.eval()
-    with torch.no_grad():
-        _, attn_weights_all = vit_model(input_tensor)
-
+    
     # ---- Use LAST LAYER attention ----
     # shape: (B, heads, 65, 65)
     attn = attn_weights_all[-1][0]  # first image
@@ -355,7 +380,7 @@ def gradcam_node(state: AgentState) -> AgentState:
     cv2.imwrite(output_path, cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
 
     return {"heatmap_path": output_path}
-
+'''
 #loop control
 def should_loop(state: AgentState):
     if state["iteration"] >= state["max_iterations"]:
@@ -387,7 +412,6 @@ graph.add_node("reason_query", reasoner_query_node)
 graph.add_node("retrieve", retrieval_node)
 graph.add_node("reason_evidence", reasoner_evidence_node)
 graph.add_node("explain", explainer_node)
-graph.add_node("gradcam", gradcam_node)
 
 graph.set_entry_point("vit")
 
@@ -404,8 +428,7 @@ graph.add_conditional_edges(
     }
 )
 
-graph.add_edge("explain", "gradcam")
-graph.add_edge("gradcam", END)
+graph.add_edge("explain", END)
 
 app = graph.compile()
 
