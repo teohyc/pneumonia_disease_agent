@@ -97,7 +97,7 @@ def vit_inference(image_path: str) -> dict:
         
         #inference
         with torch.no_grad():
-            outputs = vit_model(image_tensor)
+            outputs, _ = vit_model(image_tensor)
             probabilities = torch.softmax(outputs, dim=1)
             
         #probabilities for all classes and transfer to cpu and to numpy array
@@ -145,7 +145,7 @@ def reshape_transform(tensor, height=8, width=8):
     tensor = tensor[:, 1:, :]
 
     # reshape into spatial map
-    result = tensor.reshape(tensor.size(0), height, width, tensor.size(2))
+    result = tensor.reshape(tensor.size(0), 8, 8, tensor.size(2))
 
     # convert to (B, C, H, W)
     result = result.permute(0, 3, 1, 2)
@@ -302,61 +302,59 @@ Base everything strictly on the ViT output and retrieved documents. Always expla
 def gradcam_node(state: AgentState) -> AgentState:
 
     image_path = state["image_path"]
-    vit = state["vit_result"]
 
-    # load original image (RGB for overlay)
-    original = Image.open(image_path).convert("RGB")
-    original_np = np.array(original) / 255.0
-
-    # preprocess 
+    # ---- Preprocess ----
     transform = transforms.Compose([
         transforms.Resize((64, 64)),
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.5], std=[0.5])
     ])
 
-    input_tensor = transform(Image.open(image_path).convert("L"))
-    input_tensor = input_tensor.unsqueeze(0).to(device)
+    image = Image.open(image_path).convert("L")
+    input_tensor = transform(image).unsqueeze(0).to(device)
 
-    # Choose target layer 
-    # For ViT usually last transformer block
-    target_layer = vit_model.encoder.layers[-1]
+    # ---- Forward pass (get attention weights) ----
+    vit_model.eval()
+    with torch.no_grad():
+        _, attn_weights_all = vit_model(input_tensor)
 
-    cam = GradCAM(
-        model=vit_model,
-        target_layers=[target_layer],
-        reshape_transform=reshape_transform
-    )
+    # ---- Use LAST LAYER attention ----
+    # shape: (B, heads, 65, 65)
+    attn = attn_weights_all[-1][0]  # first image
 
-    # Target = predicted class index
-    class_names = ["Normal", "Bacterial Pneumonia", "Viral Pneumonia", "COVID-19"]
-    target_class_index = class_names.index(vit["predicted_class"])
+    # ---- Average across heads (or try max for sharper) ----
+    attn = attn.mean(dim=0)  # (65, 65)
 
-    targets = [ClassifierOutputTarget(target_class_index)]
+    # ---- CLS token attention to patches ----
+    cls_attn = attn[0, 1:]  # (64,)
 
-    grayscale_cam = cam(
-        input_tensor=input_tensor,
-        targets=targets
-    )
+    # ---- Reshape to 8x8 grid ----
+    heatmap = cls_attn.reshape(8, 8).cpu().numpy()
 
-    grayscale_cam = grayscale_cam[0]
+    # ---- Normalize properly ----
+    heatmap = heatmap - heatmap.min()
+    heatmap = heatmap / (heatmap.max() + 1e-8)
 
-    # Resize CAM to original image size
-    grayscale_cam = cv2.resize(
-        grayscale_cam,
+    # ---- Resize to image size ----
+    original = Image.open(image_path).convert("RGB")
+    original_np = np.array(original).astype(np.float32) / 255.0
+
+    heatmap = cv2.resize(
+        heatmap,
         (original_np.shape[1], original_np.shape[0])
     )
 
-    visualization = show_cam_on_image(
-        original_np,
-        grayscale_cam,
-        use_rgb=True
-    )
+    heatmap = np.uint8(255 * heatmap)
+    heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
+    heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB) / 255.0
 
-    output_path = "gradcam_overlay.jpg"
-    cv2.imwrite(output_path, visualization)
+    overlay = 0.5 * heatmap + 0.5 * original_np
+    overlay = np.uint8(255 * overlay)
 
-    return {"heatmap_path": output_path} 
+    output_path = "attention_overlay.jpg"
+    cv2.imwrite(output_path, cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
+
+    return {"heatmap_path": output_path}
 
 #loop control
 def should_loop(state: AgentState):

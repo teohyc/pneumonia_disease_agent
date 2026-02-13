@@ -30,7 +30,7 @@ class CustomEncoderLayer(nn.Module):
         self.attn_weights = None  # store attention
 
     def forward(self, x):
-        attn_out, attn_weights = self.attn(x, x, x, need_weights=True)
+        attn_out, attn_weights = self.attn(x, x, x, need_weights=True, average_attn_weights=False)
         self.attn_weights = attn_weights  # (B, heads, N, N)
 
         x = x + self.dropout(attn_out)
