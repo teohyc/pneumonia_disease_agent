@@ -13,11 +13,8 @@ from ViT_model import ViT
 
 #visualisation 
 from io import BytesIO
-from pytorch_grad_cam import GradCAM
-from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
-from pytorch_grad_cam.utils.image import show_cam_on_image
-import numpy as np
 import cv2
+import numpy as np
 
 #declare vectorstore and retriever for RAG
 PERSIST_DIR = "vectordb"
