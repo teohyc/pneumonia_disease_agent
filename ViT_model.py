@@ -12,7 +12,36 @@ class PatchEmbedding(nn.Module):
         x = self.proj(x) #(B, D, H/P, W/P)
         x = x.flatten(2).transpose(1, 2) #(B, N, D)
         return x
-        
+
+#single transformer encoder
+class CustomEncoderLayer(nn.Module):
+    def __init__(self, embed_dim, num_heads, mlp_dim, dropout):
+        super().__init__()
+        self.attn = nn.MultiheadAttention(embed_dim, num_heads, dropout=dropout, batch_first=True)
+        self.norm1 = nn.LayerNorm(embed_dim)
+        self.mlp = nn.Sequential(
+            nn.Linear(embed_dim, mlp_dim),
+            nn.GELU(),
+            nn.Linear(mlp_dim, embed_dim),
+        )
+        self.norm2 = nn.LayerNorm(embed_dim)
+        self.dropout = nn.Dropout(dropout)
+
+        self.attn_weights = None  # store attention
+
+    def forward(self, x):
+        attn_out, attn_weights = self.attn(x, x, x, need_weights=True)
+        self.attn_weights = attn_weights  # (B, heads, N, N)
+
+        x = x + self.dropout(attn_out)
+        x = self.norm1(x)
+
+        mlp_out = self.mlp(x)
+        x = x + self.dropout(mlp_out)
+        x = self.norm2(x)
+
+        return x
+    
 #define vision transformer model
 class ViT(nn.Module):
     def __init__(
@@ -32,15 +61,11 @@ class ViT(nn.Module):
         self.cls_token = nn.Parameter(torch.zeros(1, 1, embed_dim))
         self.pos_embed = nn.Parameter( torch.zeros(1, 1 + self.patch_embed.num_patches, embed_dim))
         
-        encoder_layer = nn.TransformerEncoderLayer(
-            d_model=embed_dim,
-            nhead=num_heads,
-            dim_feedforward=mlp_dim,
-            dropout=dropout,
-            batch_first=True
-        ) #define single transformer encoder layer
+        self.encoder_layers = nn.ModuleList([
+            CustomEncoderLayer(embed_dim, num_heads, mlp_dim, dropout)
+            for _ in range(depth)
+        ])
 
-        self.encoder = nn.TransformerEncoder(encoder_layer, depth) #6 layers of transformer layers
         self.norm = nn.LayerNorm(embed_dim)
         self.head = nn.Linear(embed_dim, num_classes) #define final classifier layer
 
@@ -53,8 +78,14 @@ class ViT(nn.Module):
         x = torch.cat((cls_tokens, x), dim=1) #(B, 1+N, D)
         x = x + self.pos_embed
 
-        x = self.encoder(x)
-        x = self.norm(x)
+        attn_weights_all = [] #save all the weights
 
+        for layer in self.encoder_layers:
+            x = layer(x)
+            attn_weights_all.append(layer.attn_weights)
+
+        x = self.norm(x)
         cls_out = x[:, 0]
-        return self.head(cls_out)
+        logits = self.head(cls_out)
+
+        return logits, attn_weights_all
