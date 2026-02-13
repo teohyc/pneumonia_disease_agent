@@ -11,7 +11,13 @@ from PIL import Image
 import torchvision.transforms as transforms
 from ViT_model import ViT
 
+#visualisation 
 from io import BytesIO
+from pytorch_grad_cam import GradCAM
+from pytorch_grad_cam.utils.model_targets import ClassifierOutputTarget
+from pytorch_grad_cam.utils.image import show_cam_on_image
+import numpy as np
+import cv2
 
 #declare vectorstore and retriever for RAG
 PERSIST_DIR = "vectordb"
@@ -57,6 +63,7 @@ class AgentState(TypedDict):
     vit_result: dict
     retrieved_docs: list
     image_path: str
+    heatmap_path: str
 
     iteration: int
     max_iterations: int #max iterations for reasoner-RAG retriever loop to run
@@ -132,6 +139,18 @@ def retriever_tool(query: str) -> list:
     results = retriever.invoke(query)
     return [result.page_content for result in results]
 
+#utility for gradcam
+def reshape_transform(tensor, height=8, width=8):
+    # remove CLS token
+    tensor = tensor[:, 1:, :]
+
+    # reshape into spatial map
+    result = tensor.reshape(tensor.size(0), height, width, tensor.size(2))
+
+    # convert to (B, C, H, W)
+    result = result.permute(0, 3, 1, 2)
+    return result
+
 #define ViT node
 def vit_node(state: AgentState) -> AgentState:
     vit_result = vit_inference.invoke({"image_path": state["image_path"]})
@@ -180,7 +199,14 @@ def retrieval_node(state: AgentState) -> AgentState:
     query = state["messages"][-1].content
     docs = retriever_tool.invoke({"query": query})
 
-    return {"retrieved_docs": docs}
+    # ensure we accumulate rather than overwrite previous docs
+    prev = state.get("retrieved_docs", []) or []
+    combined = prev.copy()
+    for d in docs:
+        if d not in combined:
+            combined.append(d)
+
+    return {"retrieved_docs": combined}
 
 #define reasoner 2 node, evidence evaluator
 def reasoner_evidence_node(state: AgentState) -> AgentState:
@@ -214,6 +240,7 @@ ADVICE: <what the query formulator should search next if insufficient>
     response = reasoner_llm.invoke([prompt])
 
     print(response.content) #debugging
+    print(len(state["retrieved_docs"]))
 
     return {
         "messages": [response],
@@ -258,7 +285,7 @@ If supporting documents are limited, explicitly state that evidence is limited.
 
 Provide structured explanation:
 
-1. Present the X-ray ViT diagnosis result professionally
+1. Present the X-ray ViT diagnosis result professionally in a table form easy to be read with the confidence score of all classes presented.
 2. Diagnosis (include predicted class and confidence)
 3. Supporting Evidence
 4. Uncertainty Discussion
@@ -270,6 +297,66 @@ Base everything strictly on the ViT output and retrieved documents. Always expla
     response = explainer_llm.invoke([prompt])
 
     return {"messages": [response]}
+
+#gradcam node
+def gradcam_node(state: AgentState) -> AgentState:
+
+    image_path = state["image_path"]
+    vit = state["vit_result"]
+
+    # load original image (RGB for overlay)
+    original = Image.open(image_path).convert("RGB")
+    original_np = np.array(original) / 255.0
+
+    # preprocess 
+    transform = transforms.Compose([
+        transforms.Resize((64, 64)),
+        transforms.ToTensor(),
+        transforms.Normalize(mean=[0.5], std=[0.5])
+    ])
+
+    input_tensor = transform(Image.open(image_path).convert("L"))
+    input_tensor = input_tensor.unsqueeze(0).to(device)
+
+    # Choose target layer 
+    # For ViT usually last transformer block
+    target_layer = vit_model.encoder.layers[-1]
+
+    cam = GradCAM(
+        model=vit_model,
+        target_layers=[target_layer],
+        reshape_transform=reshape_transform
+    )
+
+    # Target = predicted class index
+    class_names = ["Normal", "Bacterial Pneumonia", "Viral Pneumonia", "COVID-19"]
+    target_class_index = class_names.index(vit["predicted_class"])
+
+    targets = [ClassifierOutputTarget(target_class_index)]
+
+    grayscale_cam = cam(
+        input_tensor=input_tensor,
+        targets=targets
+    )
+
+    grayscale_cam = grayscale_cam[0]
+
+    # Resize CAM to original image size
+    grayscale_cam = cv2.resize(
+        grayscale_cam,
+        (original_np.shape[1], original_np.shape[0])
+    )
+
+    visualization = show_cam_on_image(
+        original_np,
+        grayscale_cam,
+        use_rgb=True
+    )
+
+    output_path = "gradcam_overlay.jpg"
+    cv2.imwrite(output_path, visualization)
+
+    return {"heatmap_path": output_path} 
 
 #loop control
 def should_loop(state: AgentState):
@@ -302,6 +389,7 @@ graph.add_node("reason_query", reasoner_query_node)
 graph.add_node("retrieve", retrieval_node)
 graph.add_node("reason_evidence", reasoner_evidence_node)
 graph.add_node("explain", explainer_node)
+graph.add_node("gradcam", gradcam_node)
 
 graph.set_entry_point("vit")
 
@@ -318,23 +406,25 @@ graph.add_conditional_edges(
     }
 )
 
-graph.add_edge("explain", END)
+graph.add_edge("explain", "gradcam")
+graph.add_edge("gradcam", END)
 
 app = graph.compile()
 
-""" #drawing the flow diagram
+"""#drawing the flow diagram
 png = app.get_graph().draw_mermaid_png()
 img = Image.open(BytesIO(png))
 img.show()
 img.save("pneumonia_agent_diagram.png")
-"""
 
-def run_agent(image_path: str, max_iterations: int = 3):
+"""
+def run_agent(image_path: str, max_iterations: int = 6):
      initial_state = {
         "messages": [HumanMessage(content="Analyze this chest X-ray image.")],
         "vit_result": {},
         "retrieved_docs": [],
         "image_path": image_path,
+        "heatmap_path": "",
         "iteration": 0,
         "max_iterations": max_iterations,
         "advisor_feedback": ""
@@ -348,12 +438,15 @@ def run_agent(image_path: str, max_iterations: int = 3):
 
      print(result["messages"][-1].content)
 
+     print("Grad-CAM overlay saved at:")
+     print(result["heatmap_path"])
+
 #main
 if __name__ == "__main__":
 
     image_path = input("Enter path to chest X-ray image: ").strip()
 
     try:
-        run_agent(image_path=image_path, max_iterations=3)
+        run_agent(image_path=image_path, max_iterations=6)
     except Exception as e:
         print(f"\nError running agent: {e}")
