@@ -19,7 +19,7 @@ def build_vector_db():
     print(f"Loaded {len(documents)} raw documents")
 
     splitter = RecursiveCharacterTextSplitter(
-        chunk_size=200,
+        chunk_size=250,
         chunk_overlap=50
     )
 
@@ -37,8 +37,7 @@ def build_vector_db():
         collection_name=COLLECTION_NAME
     )
 
-    vectorstore.persist()
-    print("✅ Vector DB successfully built and persisted")
+    print("Vector DB successfully built and persisted")
 
 if __name__ == "__main__":
     build_vector_db()

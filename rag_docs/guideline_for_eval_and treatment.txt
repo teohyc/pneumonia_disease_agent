@@ -1,0 +1,62 @@
+Clinical Guideline: Evaluation and Management of Pneumonia
+1. Diagnostic Triggers (Adults)
+Initial Suspicion: Acute onset of fever/chills and cough (productive or non-productive).
+
+Risk Probability: Baseline probability of pneumonia in acute cough is 5%. If all vital signs are normal, probability drops to 1%.
+
+Chest Radiograph (CXR) Indications:
+
+Vital Signs: Temp >100°F (37.8°C), HR >100 bpm, or RR >20 bpm.
+
+Physical Exam: Crackles or decreased breath sounds (in patients without asthma).
+
+Guideline Standard: IDSA 2016 recommends CXR with demonstrable infiltrate to confirm diagnosis and exclude acute bronchitis.
+
+Delayed Presentation: 1 in 10 patients with a clinical diagnosis of CAP but a normal initial CXR will show radiographic evidence within 72 hours. If clinical suspicion is high, treat empirically and repeat CXR in 24–48 hours.
+
+2. Adult Severity Assessment & Disposition
+CURB-65 Tool: (1 point each for Confusion, Urea >7 mmol/L, RR ≥30, BP <90/60, Age ≥65).
+
+Score 0–1: Low risk; Outpatient care.
+
+Score 2: Moderate risk; Consider short-stay inpatient or close monitoring.
+
+Score 3+: High risk; Inpatient admission (consider ICU for 4-5).
+
+CRB-65: Alternative for primary care (excludes Urea).
+
+3. Pediatric Considerations
+Diagnosis: Fever, cough, and tachypnea are primary indicators.
+
+Etiology by Age:
+
+0–5 years: Primarily viral (RSV, Influenza). Bacterial causes include S. pneumoniae and H. influenzae.
+
+>5 years: Bacterial causes become more common (M. pneumoniae, S. pneumoniae).
+
+Treatment: Amoxicillin remains first-line for outpatient bacterial pneumonia. Macrolides are used for suspected atypical pathogens (more common in children >5 yrs).
+
+4. Empirical Treatment Summary (Adult CAP)
+Outpatient (Healthy): Macrolide (Azithromycin) or Doxycycline.
+
+Outpatient (Comorbidities): Respiratory Fluoroquinolone (Levofloxacin/Moxifloxacin) OR Beta-lactam plus Macrolide.
+
+Inpatient (Non-ICU): Respiratory Fluoroquinolone OR Beta-lactam plus Macrolide.
+
+5. Key Pathogen Risk Factors
+Alcoholism: S. pneumoniae, Anaerobes, K. pneumoniae.
+
+COPD/Smoking: H. influenzae, P. aeruginosa, M. catarrhalis.
+
+Recent Travel: Legionella (hotels/cruises).
+
+Influenza Co-infection: S. aureus (MRSA), S. pneumoniae.
+
+6. When to Expand Testing (Cultures/Urine Antigen)
+ICU admission.
+
+Failure of outpatient antibiotic therapy.
+
+Cavitary infiltrates or pleural effusion.
+
+Active alcohol abuse or severe liver disease.

@@ -15,6 +15,7 @@ from ViT_model import ViT
 from io import BytesIO
 import cv2
 import numpy as np
+import base64
 
 #declare vectorstore and retriever for RAG
 PERSIST_DIR = "vectordb"
@@ -59,8 +60,8 @@ class AgentState(TypedDict):
 
     vit_result: dict
     retrieved_docs: list
-    image_path: str
-    heatmap_path: str
+    image: Image.Image
+    heatmap_base64: str
 
     iteration: int
     max_iterations: int #max iterations for reasoner-RAG retriever loop to run
@@ -70,7 +71,7 @@ class AgentState(TypedDict):
 
 #declare Diffusion-Augmented ViT tool node
 @tool
-def vit_inference(image_path: str) -> dict:
+def vit_inference(image: Image.Image) -> dict:
     """
     Run ViT on chest X-ray and return prediction.
     """
@@ -79,7 +80,7 @@ def vit_inference(image_path: str) -> dict:
 
     try:
         # load and preprocess image
-        image = Image.open(image_path).convert("L")  # Convert to grayscale
+        image = image.convert("L")  # Convert to grayscale
         
         # define preprocessing transform
         transform = transforms.Compose([
@@ -95,10 +96,16 @@ def vit_inference(image_path: str) -> dict:
         #inference
         with torch.no_grad():
             outputs, attn_weights_all = vit_model(image_tensor)
+            print('vit outputs:', outputs)
+            if torch.isnan(outputs).any(): #debugging
+                print('Warning: NaNs in outputs')
+
             probabilities = torch.softmax(outputs, dim=1)
+            print('probabilities:', probabilities)
             
         #probabilities for all classes and transfer to cpu and to numpy array
         probs = probabilities[0].cpu().numpy()
+        print('probs numpy:', probs)
         
         #list of class_name, probability and sort by probability descending
         class_probs = [(class_names[i], float(probs[i])) for i in range(len(class_names))]
@@ -107,6 +114,7 @@ def vit_inference(image_path: str) -> dict:
         #top predicted class and confidence
         predicted_class = class_probs[0][0]
         confidence_score = class_probs[0][1]
+        print(predicted_class, confidence_score)
 
         #For heatmap
         # (B, heads, 65, 65)
@@ -126,8 +134,7 @@ def vit_inference(image_path: str) -> dict:
         heatmap = heatmap / (heatmap.max() + 1e-8)
 
         #resize
-        original = Image.open(image_path).convert("RGB")
-        original_np = np.array(original).astype(np.float32) / 255.0
+        original_np = np.array(image.convert("RGB")).astype(np.float32) / 255.0
 
         heatmap = cv2.resize(
             heatmap,
@@ -141,29 +148,32 @@ def vit_inference(image_path: str) -> dict:
         overlay = 0.5 * heatmap + 0.5 * original_np
         overlay = np.uint8(255 * overlay)
 
-        output_path = "attention_overlay.jpg"
-        cv2.imwrite(output_path, cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
+        #base64 conversion
+        _, buffer = cv2.imencode(".jpg", cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
+        heatmap_base64 = base64.b64encode(buffer).decode("utf-8")
 
         torch.cuda.empty_cache() #clear GPU memory
         
         #top_k list
         top_k = [{"class": class_name, "prob": round(prob, 4)} for class_name, prob in class_probs]
-        
-        print(predicted_class, round(confidence_score, 4)) #debugging
-
+    
         return {
             "predicted_class": predicted_class,
             "confidence": round(confidence_score, 4),
-            "top_k": top_k
-        }, output_path
+            "top_k": top_k,
+            "heatmap_base64": heatmap_base64
+        }
         
     except Exception as e:
+        import traceback
+        print("Exception in vit_inference:", traceback.format_exc())
         return {
             "predicted_class": "Error",
             "confidence": 0.0,
             "top_k": [],
+            "heatmap_base64": "",
             "error": str(e)
-        }, output_path
+        }
     
 #declare RAG retriever tool
 @tool
@@ -174,27 +184,21 @@ def retriever_tool(query: str) -> list:
     results = retriever.invoke(query)
     return [result.page_content for result in results]
 
-#utility for gradcam
-def reshape_transform(tensor, height=8, width=8):
-    # remove CLS token
-    tensor = tensor[:, 1:, :]
-
-    # reshape into spatial map
-    result = tensor.reshape(tensor.size(0), 8, 8, tensor.size(2))
-
-    # convert to (B, C, H, W)
-    result = result.permute(0, 3, 1, 2)
-    return result
 
 #define ViT node
 def vit_node(state: AgentState) -> AgentState:
-    vit_result, heatmap_path = vit_inference.invoke({"image_path": state["image_path"]})
+    result = vit_inference.invoke({"image": state["image"]})
     
     return {
-        "vit_result": vit_result,
+        "vit_result": {
+            "predicted_class": result.get("predicted_class"),
+            "confidence": result.get("confidence"),
+            "top_k": result.get("top_k"),
+            "error": result.get("error")
+        },
         "retrieved_docs": [],
         "advisor_feedback": "",
-        "heatmap_path": heatmap_path
+        "heatmap_base64": result.get("heatmap_base64", "")
     }
 
 #define reasoner 1 node, query formulater
@@ -260,6 +264,9 @@ Class: {vit['predicted_class']}
 Confidence: {vit['confidence']}
 Top Alternatives: {vit['top_k']}
 
+Previous Advice made for retriever: 
+{state['advisor_feedback']}
+
 Retrieved Documents:
 {state['retrieved_docs']}
 
@@ -269,7 +276,7 @@ DECISION: SUFFICIENT or INSUFFICIENT
 REASON: <brief reasoning>
 ADVICE: <what the query formulator should search next if insufficient>
 
-(Output "DECISION: INSUFFICIENT" if the documents are not enough or the Confidence of ViT result is less than 90%)
+(Output "DECISION: INSUFFICIENT" if the documents are not enough or the Confidence of ViT result is tool less thus need explanation or suggest further action, you are NOT to give the same ADVICE as the previous advice given to the retiever stated.)
 """        
     )
 
@@ -333,51 +340,7 @@ Base everything strictly on the ViT output and retrieved documents. Always expla
     response = explainer_llm.invoke([prompt])
 
     return {"messages": [response]}
-'''
-#gradcam node
-def gradcam_node(state: AgentState) -> AgentState:
 
-    image_path = state["image_path"]
-
-    
-    # ---- Use LAST LAYER attention ----
-    # shape: (B, heads, 65, 65)
-    attn = attn_weights_all[-1][0]  # first image
-
-    # ---- Average across heads (or try max for sharper) ----
-    attn = attn.mean(dim=0)  # (65, 65)
-
-    # ---- CLS token attention to patches ----
-    cls_attn = attn[0, 1:]  # (64,)
-
-    # ---- Reshape to 8x8 grid ----
-    heatmap = cls_attn.reshape(8, 8).cpu().numpy()
-
-    # ---- Normalize properly ----
-    heatmap = heatmap - heatmap.min()
-    heatmap = heatmap / (heatmap.max() + 1e-8)
-
-    # ---- Resize to image size ----
-    original = Image.open(image_path).convert("RGB")
-    original_np = np.array(original).astype(np.float32) / 255.0
-
-    heatmap = cv2.resize(
-        heatmap,
-        (original_np.shape[1], original_np.shape[0])
-    )
-
-    heatmap = np.uint8(255 * heatmap)
-    heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-    heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB) / 255.0
-
-    overlay = 0.5 * heatmap + 0.5 * original_np
-    overlay = np.uint8(255 * overlay)
-
-    output_path = "attention_overlay.jpg"
-    cv2.imwrite(output_path, cv2.cvtColor(overlay, cv2.COLOR_RGB2BGR))
-
-    return {"heatmap_path": output_path}
-'''
 #loop control
 def should_loop(state: AgentState):
     if state["iteration"] >= state["max_iterations"]:
@@ -436,35 +399,42 @@ img.show()
 img.save("pneumonia_agent_diagram.png")
 
 """
-def run_agent(image_path: str, max_iterations: int = 6):
+def run_agent(image: Image.Image, max_iterations: int = 6):
      initial_state = {
         "messages": [HumanMessage(content="Analyze this chest X-ray image.")],
         "vit_result": {},
         "retrieved_docs": [],
-        "image_path": image_path,
-        "heatmap_path": "",
+        "image": image,
+        "heatmap_base64": "",
         "iteration": 0,
         "max_iterations": max_iterations,
         "advisor_feedback": ""
      }
 
      result = app.invoke(initial_state)
-
-     print("\n=======================")
-     print("FINAL EXPLANATION")
-     print("=======================\n")
-
-     print(result["messages"][-1].content)
-
-     print("Grad-CAM overlay saved at:")
-     print(result["heatmap_path"])
+     return result
 
 #main
 if __name__ == "__main__":
 
     image_path = input("Enter path to chest X-ray image: ").strip()
 
-    try:
-        run_agent(image_path=image_path, max_iterations=6)
-    except Exception as e:
-        print(f"\nError running agent: {e}")
+    image = Image.open(image_path)
+
+    result = run_agent(image=image)
+
+    print("\n ==== FINAL REPORT ====\n")
+    print(result["messages"][-1].content)
+
+    # Display heatmap
+    if result.get("heatmap_base64"):
+        heatmap_base64 = result["heatmap_base64"]
+        # Decode base64 and save as image
+        heatmap_bytes = base64.b64decode(heatmap_base64)
+        heatmap_path = "heatmap_output.jpg"
+        with open(heatmap_path, "wb") as f:
+            f.write(heatmap_bytes)
+        print("\nGrad-CAM heatmap saved at:")
+        print(heatmap_path)
+        
+        

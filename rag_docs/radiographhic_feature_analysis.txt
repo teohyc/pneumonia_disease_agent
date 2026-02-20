@@ -1,0 +1,64 @@
+================================================================================
+PNEUMONIA ETIOLOGY EVALUATION GUIDELINE
+================================================================================
+
+1. VIT PREDICTION / IMAGE FEATURE EXTRACTION
+--------------------------------------------------------------------------------
+Primary Objective: Identify structural patterns of inflammation.
+
+A. BACTERIAL PATTERNS (Alveolar Process)
+- Primary Feature: Consolidation (dense, opaque white areas).
+- Key Sign: Air bronchograms (dark, air-filled bronchi visible against dense tissue).
+- Distribution: Typically focal, lobar, or segmental.
+
+B. VIRAL PATTERNS (Interstitial Process)
+- Primary Feature: Ground-Glass Opacities (GGO) (hazy, gray opacity; underlying vessels remain visible).
+- Secondary Feature: Peripheral linear opacities or reticular patterns (intersecting lines indicating thickened connective tissue).
+- Distribution: Typically bilateral, peripheral, and favoring lower lobes.
+
+
+2. REASONER 1 & RAG RETRIEVAL: CLINICAL HISTORY & RISK FACTORS
+--------------------------------------------------------------------------------
+Primary Objective: Contextualize the image with patient presentation.
+
+A. BACTERIAL PRESENTATION
+- Onset: Acute, sudden.
+- Symptoms: High fever, shaking chills (rigors), productive cough (purulent: yellow/green/rust sputum), pleuritic chest pain.
+- Risk Factors: Advanced age, COPD/asthma, recent influenza infection, immunosuppression.
+
+B. VIRAL PRESENTATION
+- Onset: Gradual, subacute.
+- Symptoms: Low-grade fever, non-productive (dry) cough, severe myalgias, headache, profound fatigue, upper respiratory symptoms (rhinorrhea).
+- Risk Factors: Known exposure, seasonal outbreaks, crowded living conditions.
+
+
+3. REASONER 2: LAB & BIOMARKER CROSS-VALIDATION
+--------------------------------------------------------------------------------
+Primary Objective: Evaluate if the retrieved clinical data aligns with the ViT prediction.
+
+A. BACTERIAL BIOMARKERS
+- White Blood Cell (WBC): Leukocytosis (Elevated, often >15,000/mcL) with a "left shift".
+- Procalcitonin (PCT): High (>0.25 ng/mL to >0.5 ng/mL).
+- C-Reactive Protein (CRP): Significantly elevated (often >100 mg/L).
+- Microbiology: Positive sputum culture (requires 24-48 hrs).
+
+B. VIRAL BIOMARKERS
+- White Blood Cell (WBC): Normal or Leukopenia (Low), often with lymphopenia.
+- Procalcitonin (PCT): Low (<0.1 ng/mL).
+- C-Reactive Protein (CRP): Normal to moderately elevated.
+- Microbiology: Negative bacterial sputum culture; Positive RT-PCR viral panel.
+
+C. DISCREPANCY HANDLING (Routing back to Reasoner 1)
+- Trigger: If ViT predicts "Viral" (GGOs) BUT patient has high PCT (>0.25) and purulent sputum.
+- Action: RAG must search for "secondary bacterial infection superimposed on viral pneumonia" or "atypical bacterial presentation".
+
+
+4. EXPLAINER: SYNTHESIS RULES
+--------------------------------------------------------------------------------
+Primary Objective: Generate final diagnostic explanation.
+
+- Rule 1: Never diagnose on imaging alone. Always state the ViT visual findings first, followed by the supporting or contradicting lab/clinical evidence.
+- Rule 2: If PCT is high and consolidation is present, weight the explanation heavily toward bacterial etiology.
+- Rule 3: If GGOs are present and WBC/PCT are low, weight the explanation heavily toward viral etiology.
+- Rule 4: Explicitly mention if the data is insufficient (e.g., missing PCT or sputum cultures) and recommend those tests to the user.
+================================================================================

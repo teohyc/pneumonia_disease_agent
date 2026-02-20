@@ -1,0 +1,70 @@
+The diagnosis of pneumonia requires a chest radiograph (x-ray)—yes, no or sometimes?
+
+Community-acquired pneumonia (CAP) remains a common condition associated with considerable morbidity and mortality. Outcome is improved by early recognition and rapid institution of empirical antibiotic therapy. A number of international guidelines recommend a chest radiograph (x-ray) is obtained when pneumonia is suspected; the argument forwarded is that chest radiographs are relatively inexpensive and enable pneumonia (lung consolidation) to be confirmed or excluded. But, radiographs are not available in the community setting and introduce a delay in diagnosis and treatment. For these reasons, in mild CAP treated by primary care, guidelines suggest criteria for clinical diagnosis. However, there is debate as to whether clinical features alone are sufficiently reliable to support a diagnosis of CAP with some suggesting diagnostic precision is improved by chest radiographs. Conversely, several studies have demonstrated a lack of agreement in the interpretation of chest radiographs bringing their role as the ultimate arbiter of diagnosis into question. Below we debate the diagnostic role of the humble chest radiograph in the context of suspected CAP.
+
+Clinical Guideline: Diagnostic Role of Chest Radiograph in CAP
+1. The Diagnostic Debate
+Gold Standard: Internationally, CXR is considered the "gold standard" to confirm or exclude lung consolidation.
+
+Clinical Syndrome: Some argue pneumonia is a clinical syndrome (fever, cough, focal chest signs) and that CXRs have high inter-observer variability (Kappa scores often <0.6, indicating only fair-to-moderate agreement even among specialists).
+
+Access vs. Delay: While routine in hospitals, CXRs are often unavailable in primary care and can delay the initiation of antibiotics.
+
+2. Indications for Chest Radiograph (CXR)
+Guidelines vary, but consensus triggers for ordering a CXR in a patient with acute respiratory illness include:
+
+A. Vital Sign Triggers (Any one of the following):
+
+Temperature: >37.8°C (100°F)
+
+Heart Rate: >100 beats/min
+
+Respiratory Rate: >20 breaths/min
+
+B. Clinical Examination Triggers (Two or more of the following):
+
+Decreased breath sounds
+
+Crackles (rales)
+
+Absence of asthma (increases likelihood that findings represent new infection)
+
+C. Other High-Risk Triggers:
+
+Age >40 years
+
+Dementia or altered mental status
+
+Hemoptysis (coughing blood)
+
+Hypoxemia (low oxygen saturation)
+
+History of comorbidities: Coronary artery disease, congestive heart failure, or immunosuppression.
+
+3. Primary Care vs. Hospital Management
+Primary Care: If the diagnosis is clear and the case is mild, treatment can often begin based on clinical criteria (Heckerling Scale or similar) without a CXR.
+
+Hospital Admission: A CXR is mandatory for all patients admitted to the hospital to confirm diagnosis, assess extent/severity, and screen for complications (e.g., pleural effusion, empyema).
+
+The "Normal" CXR: Approximately 10% of patients with clinical pneumonia may have a normal initial CXR. If clinical suspicion is high, treat empirically and consider repeat imaging in 24–48 hours or CT if complications are suspected.
+
+4. Clinical Value of Early Imaging
+Prognostic Indicator: CXR identifies multi-lobar involvement or comorbid conditions (e.g., lung cancer) which may worsen prognosis.
+
+Efficiency: Early CXR in a hospital setting is associated with significantly shorter hospital stays and more rapid delivery of first-dose antibiotics.
+
+Follow-up: Repeat CXR is recommended for patients who do not improve as expected or those at high risk for underlying malignancy (e.g., smokers >50 years old) after 6 weeks to ensure resolution of the infiltrate.
+
+5. Key Clinical Predictors (Heckerling Criteria)
+Presence of these signs increases the probability of pneumonia:
+
+Temperature >37.8°C
+
+Heart rate >100 bpm
+
+Crackles on auscultation
+
+Decreased breath sounds
+
+Absence of asthma
+
