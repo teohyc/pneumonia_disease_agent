@@ -33,7 +33,7 @@ vectorstore = Chroma(
 
 retriever = vectorstore.as_retriever(
     search_type="similarity",
-    search_kwargs={"k": 3}
+    search_kwargs={"k": 5}
 )
 
 #declare llm used
@@ -283,7 +283,7 @@ ADVICE: <what the query formulator should search next if insufficient>
     response = reasoner_llm.invoke([prompt])
 
     print(response.content) #debugging
-    print(len(state["retrieved_docs"]))
+    print("Docs count:", len(state["retrieved_docs"]))
 
     return {
         "messages": [response],
@@ -412,7 +412,11 @@ def run_agent(image: Image.Image, max_iterations: int = 6):
      }
 
      result = app.invoke(initial_state)
-     return result
+     return {
+         "report": result["messages"][-1].content,
+         "prediction": result["vit_result"],
+         "heatmap_base64": result.get("heatmap_base64", "")
+     }
 
 #main
 if __name__ == "__main__":
@@ -424,7 +428,7 @@ if __name__ == "__main__":
     result = run_agent(image=image)
 
     print("\n ==== FINAL REPORT ====\n")
-    print(result["messages"][-1].content)
+    print(result["report"])
 
     # Display heatmap
     if result.get("heatmap_base64"):
