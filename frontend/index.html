@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pneumonia AI Agent</title>
+</head>
+<body>
+
+  <h1>Pneumonia Diagnosis AI</h1>
+
+  <input type="file" id="imageInput" />
+  <button onclick="uploadImage()">Analyze</button>
+
+  <div id="resultSection" style="display:none; margin-top:20px;">
+    <h2>Prediction</h2>
+    <pre id="prediction"></pre>
+
+    <h2>Report</h2>
+    <pre id="report"></pre>
+
+    <h2>Attention Heatmap</h2>
+    <img id="heatmap" width="400" />
+  </div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

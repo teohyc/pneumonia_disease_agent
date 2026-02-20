@@ -1,5 +1,6 @@
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from PIL import Image
 import io
@@ -11,6 +12,14 @@ app = FastAPI(
     description=" Diffusion-Augmented ViT + RAG Medical Agent with Heatmap Output",
     version="1.0.0"
 )   
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 #response schema
 class DiagnosisResponse(BaseModel):
