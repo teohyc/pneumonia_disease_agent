@@ -116,36 +116,56 @@ def vit_inference(image: Image.Image) -> dict:
         confidence_score = class_probs[0][1]
         print(predicted_class, confidence_score)
 
-        #For heatmap
-        # (B, heads, 65, 65)
-        attn = attn_weights_all[-1][0]  # first image
+        #for heatmap (attention rollout)
 
-        #average across heads 
-        attn = attn.mean(dim=0)  # (65, 65)
+        #no of tokens (1 CLS + 64 patches = 65)
+        num_tokens = attn_weights_all[0].shape[-1]
 
-        #CLS token attention to patches 
-        cls_attn = attn[0, 1:]  # (64,)
+        #start with multiplying identity matrix
+        rollout = torch.eye(num_tokens).to(device)
 
-        #reshape to 8x8 grid
-        heatmap = cls_attn.reshape(8, 8).cpu().numpy()
+        for attn_layer in attn_weights_all:
+            #attn_layer shape: (B, heads, 65, 65)
+            attn = attn_layer[0]  # first image
+    
+            # average heads
+            attn_heads_avg = attn.mean(dim=0)  # (65, 65)
 
-        #normalize 
+            #residual connection
+            attn_heads_avg = attn_heads_avg + torch.eye(num_tokens).to(device)
+
+            #normalize rows
+            attn_heads_avg = attn_heads_avg / attn_heads_avg.sum(dim=-1, keepdim=True)
+
+            #multiply cumulatively
+            rollout = torch.matmul(attn_heads_avg, rollout)
+
+        #CLS attention to patches
+        cls_attention = rollout[0, 1:]  # remove CLS token itself
+
+        #reshape to patch grid (8x8)
+        heatmap = cls_attention.reshape(8, 8).detach().cpu().numpy()
+
+        #normalize
         heatmap = heatmap - heatmap.min()
         heatmap = heatmap / (heatmap.max() + 1e-8)
 
-        #resize
+        #get original image before resize
         original_np = np.array(image.convert("RGB")).astype(np.float32) / 255.0
 
+        #resize heatmap to original image size
         heatmap = cv2.resize(
             heatmap,
             (original_np.shape[1], original_np.shape[0])
         )
 
-        heatmap = np.uint8(255 * heatmap)
-        heatmap = cv2.applyColorMap(heatmap, cv2.COLORMAP_JET)
-        heatmap = cv2.cvtColor(heatmap, cv2.COLOR_BGR2RGB) / 255.0
+        #convert to uint8 and apply colormap
+        heatmap_uint8 = np.uint8(255 * heatmap)
+        heatmap_color = cv2.applyColorMap(heatmap_uint8, cv2.COLORMAP_JET)
+        heatmap_color = cv2.cvtColor(heatmap_color, cv2.COLOR_BGR2RGB) / 255.0
 
-        overlay = 0.5 * heatmap + 0.5 * original_np
+        #overlay
+        overlay = 0.5 * heatmap_color + 0.5 * original_np
         overlay = np.uint8(255 * overlay)
 
         #base64 conversion
