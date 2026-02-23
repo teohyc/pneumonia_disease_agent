@@ -4,4 +4,7 @@
 /covid_only_train
 /covid_only_generated
 /covid_only_attn_generated
-
+/NLMCXR_reports.tgz
+/nih_reports_xml
+/finetune_gemma3/.venv_linux
+/finetune_gemma3/unsloth_compiled_cache
