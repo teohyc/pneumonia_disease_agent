@@ -43,7 +43,7 @@ model="gemma3:latest",
 )
 
 explainer_llm = ChatOllama(
-    model="llama3.2-1B-radiologist_reporter:latest",
+    model="med_reporter-llama3.2-1B:latest",
     temperature=0.0
 )
 
