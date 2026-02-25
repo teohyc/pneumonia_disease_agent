@@ -348,7 +348,7 @@ Provide structured explanation:
 
 1. Present the X-ray ViT diagnosis result professionally in a table form easy to be read with the confidence score of all classes presented.
 2. Diagnosis (include predicted class and confidence)
-3. Supporting Evidence
+3. Present all supporting documents in a concise manner explaining the result.
 4. Uncertainty Discussion
 
 Base everything strictly on the ViT output and retrieved documents. Always explain professionally, intelligently  
