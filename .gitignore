@@ -6,4 +6,4 @@
 /covid_only_attn_generated
 /NLMCXR_reports.tgz
 /nih_reports_xml
-/create_ollama_model/llama-3.2-3b.Q4_K_M.gguf
+/create_ollama_model/llama3.2_1B_med_xray_report_model_gguf/llama-3.2-1b-instruct.Q4_K_M.gguf

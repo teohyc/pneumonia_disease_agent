@@ -43,7 +43,7 @@ model="gemma3:latest",
 )
 
 explainer_llm = ChatOllama(
-    model="gemma3:latest",
+    model="llama3.2-1B-radiologist_reporter:latest",
     temperature=0.0
 )
 
@@ -315,9 +315,7 @@ ADVICE: <what the query formulator should search next if insufficient>
 def explainer_node(state: AgentState) -> AgentState:
     
     vit = state["vit_result"]
-    prompt = SystemMessage(
-        content=f"""
-You are an X-Ray medical explanation agent.
+    prompt_text = f"""You are an X-Ray medical explanation agent.
 
 A vision transformer (ViT) model has analyzed a chest X-ray image and provided the following output:
 ViT Prediction:
@@ -355,8 +353,9 @@ Provide structured explanation:
 
 Base everything strictly on the ViT output and retrieved documents. Always explain professionally, intelligently  
 """       
-    )
+    
 
+    prompt = HumanMessage(content=prompt_text)
     response = explainer_llm.invoke([prompt])
 
     return {"messages": [response]}
