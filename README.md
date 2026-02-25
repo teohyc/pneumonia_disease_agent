@@ -6,7 +6,8 @@ Result shows impoove in recall and F1 score relative to the baseline ViT for bot
 
 Pneumonia X-Ray RAG agent:
 A RAG agent that takes an xray image and diagnoses the causes (normal, bacterial-pneumonia, viral-pneumonia, covid) via a Diffusion-Augmented Vision Transformer (ViT)..
-Contains 5 nodes: ViT node, Reasoner 1 node, Retriever node, Reasoner 2 node, Explainer node
+Contains 5 nodes: ViT node, Reasoner 1 node, Retriever node, Reasoner 2 node, Explainer node.
+While the 2 resoner nodes are built with gemma3 llm, the explainer node is built with custom finetuned llama3.2-1B-radiologist_reporter which is finetuned in the repo (finetune_med_llm)
 ViT node: classify the xray with the ViT model
 Reasoner 1 node: Formulate the query to be sent to the Retriver node based on the ViT result and confidence
 Retriever node: RAG retriever capable of taking the query from the Reasoner 1 node to search the 3 most similar/compatible documents
