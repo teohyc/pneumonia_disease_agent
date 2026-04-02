@@ -1,3 +1,5 @@
+DEMO VIDEO: https://youtu.be/49x0lYSQMXg
+
 Diffusion-Augmented Vision Transformer(ViT):
 Artificial data scarcity has been applied to the covid dataset to reduce to only 323. A baseline ViT using the dataset has been evaluated. 2 Diffusion Model denoised via DDPM has been built, one without attention mechanism, one with attention mechanism.
 The 2 diffusers are trained with the 323 Covid x-ray images so that they can generate artificial yet realistic covid-19 x-ray data to make the total dataset 523 for covid class.
