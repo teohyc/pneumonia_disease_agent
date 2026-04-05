@@ -1,4 +1,5 @@
 DEMO VIDEO: https://youtu.be/49x0lYSQMXg
+Xray Predictor ViT model: https://huggingface.co/teohyc/XRay_Pneumonia_Lung_Disease_Detection-ViT
 
 Diffusion-Augmented Vision Transformer(ViT):
 Artificial data scarcity has been applied to the covid dataset to reduce to only 323. A baseline ViT using the dataset has been evaluated. 2 Diffusion Model denoised via DDPM has been built, one without attention mechanism, one with attention mechanism.
