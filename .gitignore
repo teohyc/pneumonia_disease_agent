@@ -7,3 +7,5 @@
 /NLMCXR_reports.tgz
 /nih_reports_xml
 /create_ollama_model/med_xray_model2_gguf/llama-3.2-1b-instruct.Q4_K_M.gguf
+/hf_upload_vit
+hf_upload_diff
