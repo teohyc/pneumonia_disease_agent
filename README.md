@@ -1,4 +1,4 @@
-DEMO VIDEO: https://youtu.be/49x0lYSQMXg
+DEMO VIDEO: https://youtu.be/JI-xTU7EEUw
 Xray Predictor ViT model: https://huggingface.co/teohyc/XRay_Pneumonia_Lung_Disease_Detection-ViT
 Covid-19 X-Ray Diffusion Model: https://huggingface.co/teohyc/Covid-XRay-Diffusion-Model
 Finetuned xray medical reporter model (Llama3.2-1B): https://huggingface.co/teohyc/X-Ray_Med_Reporter-llama3.2-1B
